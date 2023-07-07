@@ -1,0 +1,11 @@
+{
+  "apiVersion":2,
+  "name": "kirkynaj/test-plugin",
+  "title": "Test Plugin",
+  "version": "0.0.1",
+  "description": "A test plugin",
+  "category": "text",
+  "supports": {},
+  "editorScript": "file./build/index.js"
+
+}
