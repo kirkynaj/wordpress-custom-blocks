@@ -34,24 +34,34 @@ import './editor.scss';
  *
  * @return {WPElement} Element to render.
  */
-export default function Edit({attributes: { metaType, metaKey }, setAttributes, context: { postType, postId }}) {
+export default function Edit({attributes: {metaType, metaKey, metaValue}, setAttributes, context: { postType, postId }}) {
+
+
+	//tutorial rest API
+		//fix rest API path
+		//save database
+		//get data from rest API using useEffect
+		//set local state
+		//render local state
+
+
 
 	// const postType = useSelect(
 	// 	(select) => select(editorStore).getCurrentPostType(),
 	// 	[]
 	// );
 	
-	const [nativeMeta, setNativeMeta] = useEntityProp('postType', postType, 'meta', postId);
-	const [acfMeta] = useEntityProp('postType', postType, 'acf');
+	// const [nativeMeta, setNativeMeta] = useEntityProp('postType', postType, 'meta', postId);
+	// const [acfMeta] = useEntityProp('postType', postType, 'acf');
 	const [date, setDate] = useState(new Date());
 	const [customText, setCustomText] = useState('');
 	const [option, setOption] = useState('a');
 	const [generatedText, setGeneratedText] = useState();
 	const [textResult, setTextResult] = useState();
 
-	console.log(metaType);
-	console.log(date);
-	console.log(customText);
+	// console.log({metaType}, {metaKey}, {metaValue});
+	// console.log(date);
+	// console.log(customText);
 
 	const handleClick = () => {
 		apiFetch({path: '/wp/v2/Posts/25'}).then((posts) => {
@@ -60,28 +70,69 @@ export default function Edit({attributes: { metaType, metaKey }, setAttributes, 
 		})
 	};
 
-	const textHandleClick = () => {
-		setTextResult(customText);
-	}
+	// const { acfMeta } = () => metaValue;
+
+	// apiFetch({
+	// 	path: 'wp/acf-meta-block/v1/save',
+	// 	method: 'POST',
+	// 	data: {
+	// 		post_id: wp.data.select('core/editor').getCurrentPostId(),
+	// 		acf_meta_value: acfMeta,
+	// 	},
+	// })
+	// .then(res => console.log('result =>', res))
+	// .catch((error) => {
+
+	// });
+
+
+
+
+	// const isSaving = useSelect((select) => {
+	// 	return select('core/editor').isSavingPost();
+	// });
+
+
+	// useEffect(() => {
+	// 	if (isSaving) {
+	// 			apiFetch({
+	// 				path: `/acf-meta-block/v1/`,
+  //   			method: 'POST',
+  //   			data: {
+  //     			acf_meta_value: {
+	// 						...metaValue,
+	// 					}
+  //   			},
+	// 		}).then(res => console.log('result =>', res));		
+	// 	};
+	// },[isSaving]);
+
+	// const metaInfo = useSelect((select) => {
+	// 	return select('core/editor').getBlocks('');
+	// });
+
+	// useEffect(() => {
+	// 	console.log('result =>', metaInfo);
+	// }, [metaInfo]);
 	
 	return (
 		<p { ...useBlockProps() }>
-			<h2>Result: { textResult }</h2>
+			<h2>Result: { metaValue }</h2>
 
 			<InspectorControls>
 				<PanelBody
 					title={__('Custom Blocks', 'acf-meta')}
 					
 				>
-					<SelectControl
+					{/* <SelectControl
 								label={__('Meta Key')}
-								value={ metaKey }
+								value={ metaType }
 								options={ [
-										{ label: 'Custom Field', value: '_custom_field' },
-										{ label: 'Custom Text', value: '_custom_text' },
+										{ label: 'Custom Field', value: 'custom_field' },
+										{ label: 'Custom Text', value: 'custom_text' },
 								] }
-								onChange={ ( newType ) => setAttributes( { metaKey: newType } ) }
-						/>
+								onChange={ ( newType ) => setAttributes( { metaType: newType } ) }
+						/> */}
 						<p>
 							<TextControl
 											label="Meta Block Field"
@@ -94,16 +145,12 @@ export default function Edit({attributes: { metaType, metaKey }, setAttributes, 
 								onClick={()=>handleClick()}
 							>Generate</Button>
 						</p>
-						<TextareaControl
-							label="Custom Text Input"
+						<TextControl
+							label={__("Custom Text Input")}
 							placeholder='Enter something here'
-							value={customText}
-							onChange={(value) => setCustomText(value)}
+							value={metaValue}
+							onChange={(value) => setAttributes({ metaValue: value })}
 						/>
-						<Button
-								variant="primary"
-								onClick={()=>textHandleClick()}
-							>Display Text</Button>
 						<RadioControl
 							label="Custom Radio Button"
 							selected={ option }

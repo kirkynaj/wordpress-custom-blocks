@@ -61,7 +61,8 @@ __webpack_require__.r(__webpack_exports__);
 function Edit({
   attributes: {
     metaType,
-    metaKey
+    metaKey,
+    metaValue
   },
   setAttributes,
   context: {
@@ -69,21 +70,30 @@ function Edit({
     postId
   }
 }) {
+  //tutorial rest API
+  //fix rest API path
+  //save database
+  //get data from rest API using useEffect
+  //set local state
+  //render local state
+
   // const postType = useSelect(
   // 	(select) => select(editorStore).getCurrentPostType(),
   // 	[]
   // );
 
-  const [nativeMeta, setNativeMeta] = (0,_wordpress_core_data__WEBPACK_IMPORTED_MODULE_6__.useEntityProp)('postType', postType, 'meta', postId);
-  const [acfMeta] = (0,_wordpress_core_data__WEBPACK_IMPORTED_MODULE_6__.useEntityProp)('postType', postType, 'acf');
+  // const [nativeMeta, setNativeMeta] = useEntityProp('postType', postType, 'meta', postId);
+  // const [acfMeta] = useEntityProp('postType', postType, 'acf');
   const [date, setDate] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(new Date());
   const [customText, setCustomText] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)('');
   const [option, setOption] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)('a');
   const [generatedText, setGeneratedText] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)();
   const [textResult, setTextResult] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)();
-  console.log(metaType);
-  console.log(date);
-  console.log(customText);
+
+  // console.log({metaType}, {metaKey}, {metaValue});
+  // console.log(date);
+  // console.log(customText);
+
   const handleClick = () => {
     _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_7___default()({
       path: '/wp/v2/Posts/25'
@@ -92,27 +102,53 @@ function Edit({
       setGeneratedText(posts?.title.rendered);
     });
   };
-  const textHandleClick = () => {
-    setTextResult(customText);
-  };
+
+  // const { acfMeta } = () => metaValue;
+
+  // apiFetch({
+  // 	path: 'wp/acf-meta-block/v1/save',
+  // 	method: 'POST',
+  // 	data: {
+  // 		post_id: wp.data.select('core/editor').getCurrentPostId(),
+  // 		acf_meta_value: acfMeta,
+  // 	},
+  // })
+  // .then(res => console.log('result =>', res))
+  // .catch((error) => {
+
+  // });
+
+  // const isSaving = useSelect((select) => {
+  // 	return select('core/editor').isSavingPost();
+  // });
+
+  // useEffect(() => {
+  // 	if (isSaving) {
+  // 			apiFetch({
+  // 				path: `/acf-meta-block/v1/`,
+  //   			method: 'POST',
+  //   			data: {
+  //     			acf_meta_value: {
+  // 						...metaValue,
+  // 					}
+  //   			},
+  // 		}).then(res => console.log('result =>', res));		
+  // 	};
+  // },[isSaving]);
+
+  // const metaInfo = useSelect((select) => {
+  // 	return select('core/editor').getBlocks('');
+  // });
+
+  // useEffect(() => {
+  // 	console.log('result =>', metaInfo);
+  // }, [metaInfo]);
+
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     ...(0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps)()
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Result: ", textResult), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Result: ", metaValue), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Custom Blocks', 'acf-meta')
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Meta Key'),
-    value: metaKey,
-    options: [{
-      label: 'Custom Field',
-      value: '_custom_field'
-    }, {
-      label: 'Custom Text',
-      value: '_custom_text'
-    }],
-    onChange: newType => setAttributes({
-      metaKey: newType
-    })
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextControl, {
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextControl, {
     label: "Meta Block Field",
     help: "Click generate to display post title",
     value: generatedText
@@ -120,15 +156,14 @@ function Edit({
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
     variant: "primary",
     onClick: () => handleClick()
-  }, "Generate")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextareaControl, {
-    label: "Custom Text Input",
+  }, "Generate")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextControl, {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Custom Text Input"),
     placeholder: "Enter something here",
-    value: customText,
-    onChange: value => setCustomText(value)
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
-    variant: "primary",
-    onClick: () => textHandleClick()
-  }, "Display Text"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.RadioControl, {
+    value: metaValue,
+    onChange: value => setAttributes({
+      metaValue: value
+    })
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.RadioControl, {
     label: "Custom Radio Button",
     selected: option,
     options: [{
@@ -160,7 +195,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./style.scss */ "./src/style.scss");
 /* harmony import */ var _edit__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./edit */ "./src/edit.js");
-/* harmony import */ var _block_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./block.json */ "./src/block.json");
+/* harmony import */ var _save__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./save */ "./src/save.js");
+/* harmony import */ var _block_json__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./block.json */ "./src/block.json");
 /**
  * Registers a new block provided a unique name and an object defining its behavior.
  *
@@ -183,17 +219,93 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 /**
  * Every block starts by registering a new block type definition.
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
-(0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.registerBlockType)(_block_json__WEBPACK_IMPORTED_MODULE_3__.name, {
+(0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.registerBlockType)(_block_json__WEBPACK_IMPORTED_MODULE_4__.name, {
   /**
    * @see ./edit.js
    */
-  edit: _edit__WEBPACK_IMPORTED_MODULE_2__["default"]
+  edit: _edit__WEBPACK_IMPORTED_MODULE_2__["default"],
+  save: _save__WEBPACK_IMPORTED_MODULE_3__["default"]
 });
+
+/***/ }),
+
+/***/ "./src/save.js":
+/*!*********************!*\
+  !*** ./src/save.js ***!
+  \*********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ save)
+/* harmony export */ });
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/api-fetch */ "@wordpress/api-fetch");
+/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3__);
+
+/**
+ * Retrieves the translation of text.
+ *
+ * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
+ */
+
+
+/**
+ * React hook that is used to mark the block wrapper element.
+ * It provides all the necessary props like the class name.
+ *
+ * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
+ */
+
+
+
+/**
+ * The save function defines the way in which the different attributes should
+ * be combined into the final markup, which is then serialized by the block
+ * editor into `post_content`.
+ *
+ * @param  root0
+ * @param  root0.attributes
+ * @param  root0.attributes.message
+ * @param  root0.attributes.content
+ * @see https://developer.wordpress.org/block-editor/developers/block-api/block-edit-save/#save
+ * @return {WPElement} Element to render.
+ */
+function save({
+  attributes: {
+    metaType,
+    metaKey,
+    metaValue
+  }
+}) {
+  const {
+    acfMeta
+  } = () => metaValue;
+  console.log('acfmeta =>', acfMeta);
+  _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3___default()({
+    path: 'wp/acf-meta-block/v1/save',
+    method: 'POST',
+    data: {
+      post_id: wp.data.select('core/editor').getCurrentPostId(),
+      acf_meta_value: metaKey,
+      ...acfMeta
+    }
+  }).then(res => console.log('result =>', res)).catch(error => {});
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    ..._wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps.save()
+  });
+}
 
 /***/ }),
 

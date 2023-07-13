@@ -25,3 +25,30 @@ function create_block_acf_meta_block_init() {
 }
 add_action( 'init', 'create_block_acf_meta_block_init' );
 
+function register_acf_meta_route() {
+	register_rest_route( 'wp/acf-meta-block/v1', '/save', array(
+		'methods'		=> 'POST',
+		'callback' 	=> 'save_acf_meta_data',
+		'args'			=> array(
+			'post_id'			=> array(
+				'required' 					=> true,
+				'sanitize_callback' => 'absint',
+			),
+			'acf_meta_value' 			=> array(
+				'required'					=> true,
+				'type'							=> 'string',
+				'sanitize_callback'	=> 'sanitize_text_field',
+			),
+		),
+	) );
+}
+add_action( 'rest_api_init', 'register_acf_meta_route' );
+
+function save_acf_meta_data( WP_REST_Request $request ) {
+	$post_id = $request->get_param( 'post_id' );
+	$acf_meta_value = $request->get_param( 'acf_meta_value' );
+
+	update_post_meta( $post_id, 'acf_meta_key', $acf_meta_value );
+
+	return new WP_REST_Response( array( 'success' => true ) );
+}
