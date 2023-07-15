@@ -51,9 +51,10 @@ function register_acf_meta_route() {
 
 function save_acf_meta_data( WP_REST_Request $request ) {
 	$post_id = $request->get_param( 'post_id' );
+
 	$acf_meta_value = $request->get_param( 'acf_meta_value' );
 
-	update_post_meta( $post_id, 'acf_meta_key', $acf_meta_value );
+	update_post_meta( $post_id, 'acf_meta_value', $acf_meta_value ); 
 
 	return new WP_REST_Response( array( 'success' => true ) );
 }

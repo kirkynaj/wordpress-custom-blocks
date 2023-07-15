@@ -17,6 +17,9 @@
 		},
 		"metaKey": {
 			"type": "string"
+		},
+		"acf_meta_key": {
+			"type": "string"
 		}
 	},
 	"textdomain": "acf-meta",

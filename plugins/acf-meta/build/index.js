@@ -90,6 +90,7 @@ function Edit({
   const [generatedText, setGeneratedText] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)();
   const [textResult, setTextResult] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)();
 
+  // acf_meta_key
   // console.log({metaType}, {metaKey}, {metaValue});
   // console.log(date);
   // console.log(customText);
@@ -146,7 +147,7 @@ function Edit({
 
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     ...(0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps)()
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Result: ", metaValue), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Result: ", metaKey), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Custom Blocks', 'acf-meta')
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextControl, {
     label: "Meta Block Field",
@@ -159,9 +160,9 @@ function Edit({
   }, "Generate")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextControl, {
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Custom Text Input"),
     placeholder: "Enter something here",
-    value: metaValue,
+    value: metaKey,
     onChange: value => setAttributes({
-      metaValue: value
+      metaKey: value
     })
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.RadioControl, {
     label: "Custom Radio Button",
@@ -289,17 +290,15 @@ function save({
     metaValue
   }
 }) {
-  const {
-    acfMeta
-  } = () => metaValue;
-  console.log('acfmeta =>', acfMeta);
+  // const { acfMeta } = metaKey;
+  // console.log('acfmeta =>', metaKey);
+
   _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3___default()({
     path: 'wp/acf-meta-block/v1/save',
     method: 'POST',
     data: {
       post_id: wp.data.select('core/editor').getCurrentPostId(),
-      acf_meta_value: metaKey,
-      ...acfMeta
+      acf_meta_value: metaKey
     }
   }).then(res => console.log('result =>', res)).catch(error => {});
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -429,7 +428,7 @@ module.exports = window["wp"]["i18n"];
   \************************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"create-block/acf-meta","version":"0.1.0","title":"Acf Meta","category":"widgets","icon":"smiley","description":"Example block scaffolded with Create Block tool.","supports":{"html":false},"attributes":{"metaType":{"type":"string","default":"native"},"metaKey":{"type":"string"}},"textdomain":"acf-meta","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","render":"file:./render.php"}');
+module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"create-block/acf-meta","version":"0.1.0","title":"Acf Meta","category":"widgets","icon":"smiley","description":"Example block scaffolded with Create Block tool.","supports":{"html":false},"attributes":{"metaType":{"type":"string","default":"native"},"metaKey":{"type":"string"},"acf_meta_key":{"type":"string"}},"textdomain":"acf-meta","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","render":"file:./render.php"}');
 
 /***/ })
 

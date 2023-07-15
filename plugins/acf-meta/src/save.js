@@ -28,8 +28,8 @@ import apiFetch from '@wordpress/api-fetch';
  */
 export default function save({attributes: { metaType, metaKey, metaValue }}) {
 
-  const { acfMeta } = () => metaValue;
-	console.log('acfmeta =>', acfMeta);
+  // const { acfMeta } = metaKey;
+	// console.log('acfmeta =>', metaKey);
 
 	apiFetch({
 		path: 'wp/acf-meta-block/v1/save',
@@ -37,7 +37,6 @@ export default function save({attributes: { metaType, metaKey, metaValue }}) {
 		data: {
 			post_id: wp.data.select('core/editor').getCurrentPostId(),
 			acf_meta_value: metaKey,
-			...acfMeta,
 		},
 	})
 	.then(res => console.log('result =>', res))

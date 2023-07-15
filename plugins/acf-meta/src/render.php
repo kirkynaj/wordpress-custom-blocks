@@ -2,11 +2,13 @@
 /**
  * @see https://github.com/WordPress/gutenberg/blob/trunk/docs/reference-guides/block-api/block-metadata.md#render
  */
-    $meta_key = 'your_custom_meta_key'; // Replace with your actual meta key
+    $acf_meta_value_title = 'acf_meta_value';
     $post_id = isset( $attributes['postId'] ) ? $attributes['postId'] : get_the_ID();
-    $meta_value = get_post_meta( $post_id, $meta_key, true );
-
+    
+    $acf_meta_value = get_post_meta( $post_id, $acf_meta_value_title, true );
 		?>
 	
-    <div class="custom-field-block-output"><?php esc_html( $meta_value ) ?> </div>
+    <div class="custom-field-block-output">
+      <p><?php echo esc_html( $acf_meta_value ) ?></p>
+     </div>
 

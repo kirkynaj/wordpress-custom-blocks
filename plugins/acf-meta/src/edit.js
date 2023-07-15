@@ -36,7 +36,6 @@ import './editor.scss';
  */
 export default function Edit({attributes: {metaType, metaKey, metaValue}, setAttributes, context: { postType, postId }}) {
 
-
 	//tutorial rest API
 		//fix rest API path
 		//save database
@@ -59,6 +58,7 @@ export default function Edit({attributes: {metaType, metaKey, metaValue}, setAtt
 	const [generatedText, setGeneratedText] = useState();
 	const [textResult, setTextResult] = useState();
 
+	// acf_meta_key
 	// console.log({metaType}, {metaKey}, {metaValue});
 	// console.log(date);
 	// console.log(customText);
@@ -117,7 +117,7 @@ export default function Edit({attributes: {metaType, metaKey, metaValue}, setAtt
 	
 	return (
 		<p { ...useBlockProps() }>
-			<h2>Result: { metaValue }</h2>
+			<h2>Result: { metaKey }</h2>
 
 			<InspectorControls>
 				<PanelBody
@@ -148,8 +148,8 @@ export default function Edit({attributes: {metaType, metaKey, metaValue}, setAtt
 						<TextControl
 							label={__("Custom Text Input")}
 							placeholder='Enter something here'
-							value={metaValue}
-							onChange={(value) => setAttributes({ metaValue: value })}
+							value={metaKey}
+							onChange={(value) => setAttributes({ metaKey: value })}
 						/>
 						<RadioControl
 							label="Custom Radio Button"
