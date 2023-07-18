@@ -26,23 +26,21 @@ import apiFetch from '@wordpress/api-fetch';
  * @see https://developer.wordpress.org/block-editor/developers/block-api/block-edit-save/#save
  * @return {WPElement} Element to render.
  */
-export default function save({attributes: { metaType, metaKey, metaValue }}) {
+export default function save({attributes: { customFieldKey, metaKey }}) {
 
-  // const { acfMeta } = metaKey;
-	// console.log('acfmeta =>', metaKey);
 
-	apiFetch({
-		path: 'wp/acf-meta-block/v1/save',
-		method: 'POST',
-		data: {
-			post_id: wp.data.select('core/editor').getCurrentPostId(),
-			acf_meta_value: metaKey,
-		},
-	})
-	.then(res => console.log('result =>', res))
-	.catch((error) => {
+	// apiFetch({
+	// 	path: 'wp/acf-meta-block/v1/custom-field-key/save',
+	// 	method: 'POST',
+	// 	data: {
+	// 		post_id: wp.data.select('core/editor').getCurrentPostId(),
+	// 		acf_meta_value: metaKey,
+	// 	},
+	// })
+	// .then(res => console.log('result =>', res))
+	// .catch((error) => {
 
-	});
+	// });
 
   
 	return (

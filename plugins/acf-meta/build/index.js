@@ -59,17 +59,21 @@ __webpack_require__.r(__webpack_exports__);
  * @return {WPElement} Element to render.
  */
 function Edit({
-  attributes: {
-    metaType,
-    metaKey,
-    metaValue
-  },
+  attributes,
   setAttributes,
   context: {
     postType,
     postId
   }
 }) {
+  const {
+    customFieldKey,
+    metaType,
+    metaKey,
+    metaValue,
+    generateTitleField
+  } = attributes;
+
   //tutorial rest API
   //fix rest API path
   //save database
@@ -85,7 +89,6 @@ function Edit({
   // const [nativeMeta, setNativeMeta] = useEntityProp('postType', postType, 'meta', postId);
   // const [acfMeta] = useEntityProp('postType', postType, 'acf');
   const [date, setDate] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(new Date());
-  const [customText, setCustomText] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)('');
   const [option, setOption] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)('a');
   const [generatedText, setGeneratedText] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)();
   const [textResult, setTextResult] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)();
@@ -99,43 +102,66 @@ function Edit({
     _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_7___default()({
       path: '/wp/v2/Posts/25'
     }).then(posts => {
-      console.log(posts?.title.rendered);
+      // console.log(posts?.title.rendered);
       setGeneratedText(posts?.title.rendered);
+      setAttributes({
+        generateTitleField: generatedText
+      });
     });
   };
+  console.log('generated text =>', generatedText);
+  const {
+    isSaving,
+    edited,
+    saved
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => {
+    return {
+      isSaving: select('core/editor').isSavingPost(),
+      edited: select('core/editor').getEditedPostAttribute('customFieldKey'),
+      saved: select('core/editor').getCurrentPostAttribute('customFieldKey')
+    };
+  });
+  const {
+    savePost,
+    editedPost,
+    savedPost
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => {
+    return {
+      savePost: select('core/editor').isSavingPost(),
+      editedPost: select('core/editor').getEditedPostAttribute('generateTitleField'),
+      savedPost: select('core/editor').getCurrentPostAttribute('generateTitleField')
+    };
+  });
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    console.log({
+      isSaving
+    }, {
+      edited
+    }, {
+      saved
+    });
+    if (isSaving) {
+      _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_7___default()({
+        path: `wp/acf-meta-block/v1/custom-field-key/save`,
+        method: 'POST',
+        data: {
+          post_id: wp.data.select('core/editor').getCurrentPostId(),
+          custom_field_key: customFieldKey
+        }
+      }).then(res => console.log('result =>', res));
+    } else if (savePost) {
+      _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_7___default()({
+        path: `wp/acf-meta-block/v1/genetared-title/save`,
+        method: 'POST',
+        data: {
+          post_id: wp.data.select('core/editor').getCurrentPostId(),
+          custom_field_key: customFieldKey
+        }
+      }).then(res => console.log('result =>', res));
+    }
+  }, [isSaving, savePost]);
 
-  // const { acfMeta } = () => metaValue;
-
-  // apiFetch({
-  // 	path: 'wp/acf-meta-block/v1/save',
-  // 	method: 'POST',
-  // 	data: {
-  // 		post_id: wp.data.select('core/editor').getCurrentPostId(),
-  // 		acf_meta_value: acfMeta,
-  // 	},
-  // })
-  // .then(res => console.log('result =>', res))
-  // .catch((error) => {
-
-  // });
-
-  // const isSaving = useSelect((select) => {
-  // 	return select('core/editor').isSavingPost();
-  // });
-
-  // useEffect(() => {
-  // 	if (isSaving) {
-  // 			apiFetch({
-  // 				path: `/acf-meta-block/v1/`,
-  //   			method: 'POST',
-  //   			data: {
-  //     			acf_meta_value: {
-  // 						...metaValue,
-  // 					}
-  //   			},
-  // 		}).then(res => console.log('result =>', res));		
-  // 	};
-  // },[isSaving]);
+  // console.log('this is the custom field key edit.js', customFieldKey)
 
   // const metaInfo = useSelect((select) => {
   // 	return select('core/editor').getBlocks('');
@@ -145,25 +171,29 @@ function Edit({
   // 	console.log('result =>', metaInfo);
   // }, [metaInfo]);
 
+  // we don't need the customFieldKey to the save.json
+
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     ...(0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps)()
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Result: ", metaKey), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Result: ", customFieldKey), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", null, generateTitleField), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Custom Blocks', 'acf-meta')
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextControl, {
     label: "Meta Block Field",
-    help: "Click generate to display post title",
+    help: "Click button to generate post title",
     value: generatedText
-    // onChange={(value) => setGeneratedText({value})}
+    // onChange={() => setAttributes({ generateTitleField: generatedText })}
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
     variant: "primary",
     onClick: () => handleClick()
   }, "Generate")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextControl, {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Custom Text Input"),
-    placeholder: "Enter something here",
-    value: metaKey,
-    onChange: value => setAttributes({
-      metaKey: value
-    })
+    label: customFieldKey === "" ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Custom Text Input") : customFieldKey,
+    placeholder: "Change Label Here",
+    value: customFieldKey,
+    onChange: value => {
+      setAttributes({
+        customFieldKey: value
+      });
+    }
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.RadioControl, {
     label: "Custom Radio Button",
     selected: option,
@@ -285,22 +315,23 @@ __webpack_require__.r(__webpack_exports__);
  */
 function save({
   attributes: {
-    metaType,
-    metaKey,
-    metaValue
+    customFieldKey,
+    metaKey
   }
 }) {
-  // const { acfMeta } = metaKey;
-  // console.log('acfmeta =>', metaKey);
+  // apiFetch({
+  // 	path: 'wp/acf-meta-block/v1/custom-field-key/save',
+  // 	method: 'POST',
+  // 	data: {
+  // 		post_id: wp.data.select('core/editor').getCurrentPostId(),
+  // 		acf_meta_value: metaKey,
+  // 	},
+  // })
+  // .then(res => console.log('result =>', res))
+  // .catch((error) => {
 
-  _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3___default()({
-    path: 'wp/acf-meta-block/v1/save',
-    method: 'POST',
-    data: {
-      post_id: wp.data.select('core/editor').getCurrentPostId(),
-      acf_meta_value: metaKey
-    }
-  }).then(res => console.log('result =>', res)).catch(error => {});
+  // });
+
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     ..._wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps.save()
   });
@@ -428,7 +459,7 @@ module.exports = window["wp"]["i18n"];
   \************************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"create-block/acf-meta","version":"0.1.0","title":"Acf Meta","category":"widgets","icon":"smiley","description":"Example block scaffolded with Create Block tool.","supports":{"html":false},"attributes":{"metaType":{"type":"string","default":"native"},"metaKey":{"type":"string"},"acf_meta_key":{"type":"string"}},"textdomain":"acf-meta","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","render":"file:./render.php"}');
+module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"create-block/acf-meta","version":"0.1.0","title":"Acf Meta","category":"widgets","icon":"smiley","description":"Example block scaffolded with Create Block tool.","supports":{"html":false},"attributes":{"metaType":{"type":"string","default":"native"},"metaKey":{"type":"string"},"metaValue":{"type":"string"},"customFieldKey":{"type":"string"},"generateTitleField":{"type":"string"}},"textdomain":"acf-meta","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","render":"file:./render.php"}');
 
 /***/ })
 

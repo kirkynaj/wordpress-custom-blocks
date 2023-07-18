@@ -18,7 +18,13 @@
     "metaKey": {
       "type": "string"
     },
-    "acf_meta_key": {
+    "metaValue": {
+      "type": "string"
+    },
+    "customFieldKey": {
+      "type": "string"
+    },
+    "generateTitleField": {
       "type": "string"
     }
   },

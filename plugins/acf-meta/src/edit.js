@@ -34,7 +34,10 @@ import './editor.scss';
  *
  * @return {WPElement} Element to render.
  */
-export default function Edit({attributes: {metaType, metaKey, metaValue}, setAttributes, context: { postType, postId }}) {
+export default function Edit({attributes, setAttributes, context: { postType, postId }}) {
+
+	const {customFieldKey, metaType, metaKey, metaValue, generateTitleField } = attributes;
+
 
 	//tutorial rest API
 		//fix rest API path
@@ -53,59 +56,66 @@ export default function Edit({attributes: {metaType, metaKey, metaValue}, setAtt
 	// const [nativeMeta, setNativeMeta] = useEntityProp('postType', postType, 'meta', postId);
 	// const [acfMeta] = useEntityProp('postType', postType, 'acf');
 	const [date, setDate] = useState(new Date());
-	const [customText, setCustomText] = useState('');
 	const [option, setOption] = useState('a');
 	const [generatedText, setGeneratedText] = useState();
 	const [textResult, setTextResult] = useState();
-
+	
 	// acf_meta_key
 	// console.log({metaType}, {metaKey}, {metaValue});
 	// console.log(date);
 	// console.log(customText);
-
+	
 	const handleClick = () => {
-		apiFetch({path: '/wp/v2/Posts/25'}).then((posts) => {
-			console.log(posts?.title.rendered);
+			apiFetch({path: '/wp/v2/Posts/25'}).then((posts) => {
+			// console.log(posts?.title.rendered);
 			setGeneratedText(posts?.title.rendered);
+			setAttributes({ generateTitleField: generatedText });
+			
 		})
 	};
+	
+	console.log('generated text =>', generatedText);
 
-	// const { acfMeta } = () => metaValue;
+	const {isSaving, edited, saved} = useSelect((select) => {
+		return{
+			isSaving:  select('core/editor').isSavingPost(),
+			edited:  select('core/editor').getEditedPostAttribute('customFieldKey'),
+			saved:  select('core/editor').getCurrentPostAttribute('customFieldKey')
+		}
+	});
 
-	// apiFetch({
-	// 	path: 'wp/acf-meta-block/v1/save',
-	// 	method: 'POST',
-	// 	data: {
-	// 		post_id: wp.data.select('core/editor').getCurrentPostId(),
-	// 		acf_meta_value: acfMeta,
-	// 	},
-	// })
-	// .then(res => console.log('result =>', res))
-	// .catch((error) => {
+	const {savePost, editedPost, savedPost} = useSelect((select) => {
+		return {
+			savePost: select('core/editor').isSavingPost(),
+			editedPost: select('core/editor').getEditedPostAttribute('generateTitleField'),
+			savedPost: select('core/editor').getCurrentPostAttribute('generateTitleField')
+		}
+	});
 
-	// });
+	useEffect(() => {
+		console.log({isSaving}, {edited}, {saved})
+		if (isSaving) {
+				apiFetch({
+					path: `wp/acf-meta-block/v1/custom-field-key/save`,
+    			method: 'POST',
+    			data: {
+						post_id: wp.data.select('core/editor').getCurrentPostId(),
+      			custom_field_key: customFieldKey,
+    			},
+			}).then(res => console.log('result =>', res));		
+		} else if (savePost) {
+			apiFetch({
+				path: `wp/acf-meta-block/v1/genetared-title/save`,
+				method: 'POST',
+    			data: {
+						post_id: wp.data.select('core/editor').getCurrentPostId(),
+      			custom_field_key: customFieldKey,
+					}
+			}).then(res => console.log('result =>', res));
+		}
+	},[isSaving, savePost]);
 
-
-
-
-	// const isSaving = useSelect((select) => {
-	// 	return select('core/editor').isSavingPost();
-	// });
-
-
-	// useEffect(() => {
-	// 	if (isSaving) {
-	// 			apiFetch({
-	// 				path: `/acf-meta-block/v1/`,
-  //   			method: 'POST',
-  //   			data: {
-  //     			acf_meta_value: {
-	// 						...metaValue,
-	// 					}
-  //   			},
-	// 		}).then(res => console.log('result =>', res));		
-	// 	};
-	// },[isSaving]);
+	// console.log('this is the custom field key edit.js', customFieldKey)
 
 	// const metaInfo = useSelect((select) => {
 	// 	return select('core/editor').getBlocks('');
@@ -114,10 +124,15 @@ export default function Edit({attributes: {metaType, metaKey, metaValue}, setAtt
 	// useEffect(() => {
 	// 	console.log('result =>', metaInfo);
 	// }, [metaInfo]);
+
+	// we don't need the customFieldKey to the save.json
+
+
 	
 	return (
 		<p { ...useBlockProps() }>
-			<h2>Result: { metaKey }</h2>
+			<h2>Result: { customFieldKey }</h2>
+			<h3>{ generateTitleField }</h3>
 
 			<InspectorControls>
 				<PanelBody
@@ -135,10 +150,10 @@ export default function Edit({attributes: {metaType, metaKey, metaValue}, setAtt
 						/> */}
 						<p>
 							<TextControl
-											label="Meta Block Field"
-											help="Click generate to display post title"
-											value={ generatedText }
-											// onChange={(value) => setGeneratedText({value})}
+								label="Meta Block Field"
+								help="Click button to generate post title"
+								value={ generatedText }
+								// onChange={() => setAttributes({ generateTitleField: generatedText })}
 							/>
 							<Button
 								variant="primary"
@@ -146,10 +161,12 @@ export default function Edit({attributes: {metaType, metaKey, metaValue}, setAtt
 							>Generate</Button>
 						</p>
 						<TextControl
-							label={__("Custom Text Input")}
-							placeholder='Enter something here'
-							value={metaKey}
-							onChange={(value) => setAttributes({ metaKey: value })}
+							label={ customFieldKey === "" ?  __("Custom Text Input") : customFieldKey}
+							placeholder='Change Label Here'
+							value={customFieldKey}
+							onChange={(value) => {
+								setAttributes({ customFieldKey: value })
+							}}
 						/>
 						<RadioControl
 							label="Custom Radio Button"
@@ -173,3 +190,7 @@ export default function Edit({attributes: {metaType, metaKey, metaValue}, setAtt
 		</p>
 	);
 }
+
+
+
+

@@ -30,16 +30,40 @@ add_action( 'rest_api_init', 'register_acf_meta_route' );
 function register_acf_meta_route() {
 	register_rest_route( 
 		'wp/acf-meta-block/v1',
-		'/save',
+		'/custom-field-key/save',
 		array(
 			'methods'		=> 'POST',
-			'callback' 	=> 'save_acf_meta_data',
+			'callback' 	=> 'save_custom_field_key',
 			'args'			=> array(
 				'post_id'			=> array(
 					'required' 					=> true,
 					'sanitize_callback' => 'absint',
 				),
-				'acf_meta_value' 			=> array(
+				'custom_field_key' 			=> array(
+					'required'					=> true,
+					'type'							=> 'string',
+					'sanitize_callback'	=> 'sanitize_text_field',
+				),
+				'generate_title_field' 			=> array(
+					'required'					=> true,
+					'type'							=> 'string',
+					'sanitize_callback'	=> 'sanitize_text_field',
+				),
+			),
+		)
+	);
+	register_rest_route( 
+		'wp/acf-meta-block/v1',
+		'/generated-title/save',
+		array(
+			'methods'		=> 'POST',
+			'callback' 	=> 'save_genarate_title_field',
+			'args'			=> array(
+				'post_id'			=> array(
+					'required' 					=> true,
+					'sanitize_callback' => 'absint',
+				),
+				'generate_title_field' 			=> array(
 					'required'					=> true,
 					'type'							=> 'string',
 					'sanitize_callback'	=> 'sanitize_text_field',
@@ -49,12 +73,20 @@ function register_acf_meta_route() {
 	);
 }
 
-function save_acf_meta_data( WP_REST_Request $request ) {
+function save_custom_field_key( WP_REST_Request $request ) {
 	$post_id = $request->get_param( 'post_id' );
+	$custom_field_key = $request->get_param( 'custom_field_key' );
+	
+	update_post_meta( $post_id, 'custom_field_key', $custom_field_key );
 
-	$acf_meta_value = $request->get_param( 'acf_meta_value' );
+	return new WP_REST_Response( array( 'success' => true ) );
+}
 
-	update_post_meta( $post_id, 'acf_meta_value', $acf_meta_value ); 
+function save_genarate_title_field( WP_REST_Request $request ) {
+	$post_id = $request->get_param( 'post_id' );
+	$generate_title_field = $request->get_param( 'generate_title_field' );
+
+	update_post_meta( $post_id, 'generate_title_field', $generate_title_field );
 
 	return new WP_REST_Response( array( 'success' => true ) );
 }
