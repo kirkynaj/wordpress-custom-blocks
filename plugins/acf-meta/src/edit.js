@@ -36,7 +36,13 @@ import './editor.scss';
  */
 export default function Edit({attributes, setAttributes, context: { postType, postId }}) {
 
-	const {customFieldKey, metaType, metaKey, metaValue, generateTitleField } = attributes;
+	const {
+		customFieldKey, 
+		metaType, 
+		metaKey, 
+		metaValue, 
+		generateTitleField, 
+		radioButton } = attributes;
 
 
 	//tutorial rest API
@@ -56,14 +62,14 @@ export default function Edit({attributes, setAttributes, context: { postType, po
 	// const [nativeMeta, setNativeMeta] = useEntityProp('postType', postType, 'meta', postId);
 	// const [acfMeta] = useEntityProp('postType', postType, 'acf');
 	const [date, setDate] = useState(new Date());
-	const [option, setOption] = useState('a');
+	const [option, setOption] = useState(true);
 	const [generatedText, setGeneratedText] = useState();
 	const [textResult, setTextResult] = useState();
 	
 	// acf_meta_key
 	// console.log({metaType}, {metaKey}, {metaValue});
-	// console.log(date);
-	// console.log(customText);
+	console.log(date);
+	console.log('this is radio button =>', option);
 	
 	const handleClick = () => {
 			apiFetch({path: '/wp/v2/Posts/25'}).then((posts) => {
@@ -91,10 +97,17 @@ export default function Edit({attributes, setAttributes, context: { postType, po
 			savedPost: select('core/editor').getCurrentPostAttribute('generateTitleField')
 		}
 	});
+	// const {saveRadio, editedRadio, savedRadio} = useSelect((select) => {
+	// 	return {
+	// 		saveRadio: select('core/editor').isSavingPost(),
+	// 		editedRadio: select('core/editor').getEditedPostAttribute('generateTitleField'),
+	// 		savedRadio: select('core/editor').getCurrentPostAttribute('generateTitleField')
+	// 	}
+	// });
 
 	useEffect(() => {
 		console.log({isSaving}, {edited}, {saved})
-		if (isSaving) {
+		if (isSaving && !(edited, saved) ) {
 				apiFetch({
 					path: `wp/acf-meta-block/v1/custom-field-key/save`,
     			method: 'POST',
@@ -103,16 +116,26 @@ export default function Edit({attributes, setAttributes, context: { postType, po
       			custom_field_key: customFieldKey,
     			},
 			}).then(res => console.log('result =>', res));		
-		} else if (savePost) {
+		} if (savePost && !(editedPost, savedPost)) {
 			apiFetch({
-				path: `wp/acf-meta-block/v1/genetared-title/save`,
+				path: `wp/acf-meta-block/v1/generate-title-field/save`,
 				method: 'POST',
     			data: {
 						post_id: wp.data.select('core/editor').getCurrentPostId(),
-      			custom_field_key: customFieldKey,
+      			generate_title_field: generateTitleField,
 					}
 			}).then(res => console.log('result =>', res));
-		}
+		} 
+		// if (saveRadio) {
+		// 	apiFetch({
+		// 		path: `wp/acf-meta-block/v1/radio-button/save`,
+		// 		method: 'POST',
+    // 			data: {
+		// 				post_id: wp.data.select('core/editor').getCurrentPostId(),
+    //   			radio_button: radioButton,
+		// 			}
+		// 	}).then(res => console.log('result =>', res));
+		// }
 	},[isSaving, savePost]);
 
 	// console.log('this is the custom field key edit.js', customFieldKey)
@@ -132,7 +155,7 @@ export default function Edit({attributes, setAttributes, context: { postType, po
 	return (
 		<p { ...useBlockProps() }>
 			<h2>Result: { customFieldKey }</h2>
-			<h3>{ generateTitleField }</h3>
+			<h3>Current Status: { radioButton }</h3>
 
 			<InspectorControls>
 				<PanelBody
@@ -170,10 +193,10 @@ export default function Edit({attributes, setAttributes, context: { postType, po
 						/>
 						<RadioControl
 							label="Custom Radio Button"
-							selected={ option }
+							selected={ radioButton }
 								options={[
-									{label: 'Radio1', value: 'a'},
-									{label:'Radio2', value: 'b'},
+									{label: 'True', value: true},
+									{label:'False', value: false},
 								]}
 							onChange={(value) => setOption(value)}
 						/>

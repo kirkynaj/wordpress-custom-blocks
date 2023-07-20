@@ -26,6 +26,10 @@
     },
     "generateTitleField": {
       "type": "string"
+    },
+    "radioButton": {
+      "type": "boolean",
+      "default": true
     }
   },
   "textdomain": "acf-meta",

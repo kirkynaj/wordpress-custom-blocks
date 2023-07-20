@@ -44,17 +44,12 @@ function register_acf_meta_route() {
 					'type'							=> 'string',
 					'sanitize_callback'	=> 'sanitize_text_field',
 				),
-				'generate_title_field' 			=> array(
-					'required'					=> true,
-					'type'							=> 'string',
-					'sanitize_callback'	=> 'sanitize_text_field',
-				),
 			),
 		)
 	);
 	register_rest_route( 
 		'wp/acf-meta-block/v1',
-		'/generated-title/save',
+		'/generate-title-field/save',
 		array(
 			'methods'		=> 'POST',
 			'callback' 	=> 'save_genarate_title_field',
@@ -71,6 +66,24 @@ function register_acf_meta_route() {
 			),
 		)
 	);
+	// register_rest_route( 
+	// 	'wp/acf-meta-block/v1',
+	// 	'/radio-button/save',
+	// 	array(
+	// 		'methods'		=> 'POST',
+	// 		'callback' 	=> 'save_radio_button',
+	// 		'args'			=> array(
+	// 			'post_id'			=> array(
+	// 				'required' 					=> true,
+	// 				'sanitize_callback' => 'absint',
+	// 			),
+	// 			'generate_title_field' 			=> array(
+	// 				'required'					=> true,
+	// 				'sanitize_callback'	=> 'sanitize_text_field',
+	// 			),
+	// 		),
+	// 	)
+	// );
 }
 
 function save_custom_field_key( WP_REST_Request $request ) {
@@ -79,7 +92,7 @@ function save_custom_field_key( WP_REST_Request $request ) {
 	
 	update_post_meta( $post_id, 'custom_field_key', $custom_field_key );
 
-	return new WP_REST_Response( array( 'success' => true ) );
+	return new WP_REST_Response( array( 'success custom field' => true ) );
 }
 
 function save_genarate_title_field( WP_REST_Request $request ) {
@@ -88,5 +101,14 @@ function save_genarate_title_field( WP_REST_Request $request ) {
 
 	update_post_meta( $post_id, 'generate_title_field', $generate_title_field );
 
-	return new WP_REST_Response( array( 'success' => true ) );
+	return new WP_REST_Response( array( 'success generate title' => true ) );
 }
+
+// function save_radio_button( WP_REST_Request $request ) { 
+// 	$post_id = $request->get_param( 'post_id' );
+// 	$radio_button = $request->get_param( 'radio_button' );
+
+// 	update_post_meta( $post_id, 'radio_button', $radio_button );
+
+// 	return new WP_REST_Response( array( 'success radio button' => true ) );
+// }

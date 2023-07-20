@@ -71,7 +71,8 @@ function Edit({
     metaType,
     metaKey,
     metaValue,
-    generateTitleField
+    generateTitleField,
+    radioButton
   } = attributes;
 
   //tutorial rest API
@@ -89,15 +90,14 @@ function Edit({
   // const [nativeMeta, setNativeMeta] = useEntityProp('postType', postType, 'meta', postId);
   // const [acfMeta] = useEntityProp('postType', postType, 'acf');
   const [date, setDate] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(new Date());
-  const [option, setOption] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)('a');
+  const [option, setOption] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(true);
   const [generatedText, setGeneratedText] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)();
   const [textResult, setTextResult] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)();
 
   // acf_meta_key
   // console.log({metaType}, {metaKey}, {metaValue});
-  // console.log(date);
-  // console.log(customText);
-
+  console.log(date);
+  console.log('this is radio button =>', option);
   const handleClick = () => {
     _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_7___default()({
       path: '/wp/v2/Posts/25'
@@ -132,6 +132,14 @@ function Edit({
       savedPost: select('core/editor').getCurrentPostAttribute('generateTitleField')
     };
   });
+  // const {saveRadio, editedRadio, savedRadio} = useSelect((select) => {
+  // 	return {
+  // 		saveRadio: select('core/editor').isSavingPost(),
+  // 		editedRadio: select('core/editor').getEditedPostAttribute('generateTitleField'),
+  // 		savedRadio: select('core/editor').getCurrentPostAttribute('generateTitleField')
+  // 	}
+  // });
+
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     console.log({
       isSaving
@@ -140,7 +148,7 @@ function Edit({
     }, {
       saved
     });
-    if (isSaving) {
+    if (isSaving && !(edited, saved)) {
       _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_7___default()({
         path: `wp/acf-meta-block/v1/custom-field-key/save`,
         method: 'POST',
@@ -149,16 +157,27 @@ function Edit({
           custom_field_key: customFieldKey
         }
       }).then(res => console.log('result =>', res));
-    } else if (savePost) {
+    }
+    if (savePost && !(editedPost, savedPost)) {
       _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_7___default()({
-        path: `wp/acf-meta-block/v1/genetared-title/save`,
+        path: `wp/acf-meta-block/v1/generate-title-field/save`,
         method: 'POST',
         data: {
           post_id: wp.data.select('core/editor').getCurrentPostId(),
-          custom_field_key: customFieldKey
+          generate_title_field: generateTitleField
         }
       }).then(res => console.log('result =>', res));
     }
+    // if (saveRadio) {
+    // 	apiFetch({
+    // 		path: `wp/acf-meta-block/v1/radio-button/save`,
+    // 		method: 'POST',
+    // 			data: {
+    // 				post_id: wp.data.select('core/editor').getCurrentPostId(),
+    //   			radio_button: radioButton,
+    // 			}
+    // 	}).then(res => console.log('result =>', res));
+    // }
   }, [isSaving, savePost]);
 
   // console.log('this is the custom field key edit.js', customFieldKey)
@@ -175,7 +194,7 @@ function Edit({
 
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     ...(0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps)()
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Result: ", customFieldKey), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", null, generateTitleField), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Result: ", customFieldKey), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", null, "Current Status: ", radioButton), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Custom Blocks', 'acf-meta')
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextControl, {
     label: "Meta Block Field",
@@ -196,13 +215,13 @@ function Edit({
     }
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.RadioControl, {
     label: "Custom Radio Button",
-    selected: option,
+    selected: radioButton,
     options: [{
-      label: 'Radio1',
-      value: 'a'
+      label: 'True',
+      value: true
     }, {
-      label: 'Radio2',
-      value: 'b'
+      label: 'False',
+      value: false
     }],
     onChange: value => setOption(value)
   })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
@@ -459,7 +478,7 @@ module.exports = window["wp"]["i18n"];
   \************************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"create-block/acf-meta","version":"0.1.0","title":"Acf Meta","category":"widgets","icon":"smiley","description":"Example block scaffolded with Create Block tool.","supports":{"html":false},"attributes":{"metaType":{"type":"string","default":"native"},"metaKey":{"type":"string"},"metaValue":{"type":"string"},"customFieldKey":{"type":"string"},"generateTitleField":{"type":"string"}},"textdomain":"acf-meta","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","render":"file:./render.php"}');
+module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"create-block/acf-meta","version":"0.1.0","title":"Acf Meta","category":"widgets","icon":"smiley","description":"Example block scaffolded with Create Block tool.","supports":{"html":false},"attributes":{"metaType":{"type":"string","default":"native"},"metaKey":{"type":"string"},"metaValue":{"type":"string"},"customFieldKey":{"type":"string"},"generateTitleField":{"type":"string"},"radioButton":{"type":"boolean","default":true}},"textdomain":"acf-meta","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","render":"file:./render.php"}');
 
 /***/ })
 
