@@ -30,6 +30,9 @@
 		"radioButton": {
 			"type": "boolean",
 			"default": true
+		},
+		"getDateBlock": {
+			"type": "string"
 		}
 	},
 	"textdomain": "acf-meta",
