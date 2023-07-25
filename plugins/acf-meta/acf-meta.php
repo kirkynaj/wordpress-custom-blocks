@@ -66,19 +66,39 @@ function register_acf_meta_route() {
 			),
 		)
 	);
+	register_rest_route( 
+		'wp/acf-meta-block/v1',
+		'/radio-button/save',
+		array(
+			'methods'		=> 'POST',
+			'callback' 	=> 'save_radio_button',
+			'args'			=> array(
+				'post_id'			=> array(
+					'required' 					=> true,
+					'sanitize_callback' => 'absint',
+				),
+				'radio_button' 			=> array(
+					'required'					=> true,
+					'type'							=> 'boolean',
+					'sanitize_callback'	=> 'sanitize_text_field',
+				),
+			),
+		)
+	);
 	// register_rest_route( 
 	// 	'wp/acf-meta-block/v1',
-	// 	'/radio-button/save',
+	// 	'/get-date-block/save',
 	// 	array(
 	// 		'methods'		=> 'POST',
-	// 		'callback' 	=> 'save_radio_button',
+	// 		'callback' 	=> 'save_get_date_block',
 	// 		'args'			=> array(
 	// 			'post_id'			=> array(
 	// 				'required' 					=> true,
 	// 				'sanitize_callback' => 'absint',
 	// 			),
-	// 			'generate_title_field' 			=> array(
+	// 			'get_date_block' 			=> array(
 	// 				'required'					=> true,
+	// 				'type'							=> 'string',
 	// 				'sanitize_callback'	=> 'sanitize_text_field',
 	// 			),
 	// 		),
@@ -104,11 +124,20 @@ function save_genarate_title_field( WP_REST_Request $request ) {
 	return new WP_REST_Response( array( 'success generate title' => true ) );
 }
 
-// function save_radio_button( WP_REST_Request $request ) { 
+function save_radio_button( WP_REST_Request $request ) { 
+	$post_id = $request->get_param( 'post_id' );
+	$radio_button = $request->get_param( 'radio_button' );
+
+	update_post_meta( $post_id, 'radio_button', $radio_button );
+
+	return new WP_REST_Response( array( 'success radio button' => true ) );
+}
+
+// function save_get_date_block( WP_REST_Request $request ) { 
 // 	$post_id = $request->get_param( 'post_id' );
-// 	$radio_button = $request->get_param( 'radio_button' );
+// 	$get_date_block = $request->get_param( 'get_date_block' );
 
-// 	update_post_meta( $post_id, 'radio_button', $radio_button );
+// 	update_post_meta( $post_id, 'get_date_block', $get_date_block );
 
-// 	return new WP_REST_Response( array( 'success radio button' => true ) );
+// 	return new WP_REST_Response( array( 'success get date' => true ) );
 // }

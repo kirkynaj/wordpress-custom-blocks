@@ -72,7 +72,8 @@ function Edit({
     metaKey,
     metaValue,
     generateTitleField,
-    radioButton
+    radioButton,
+    getDateBlock
   } = attributes;
 
   //tutorial rest API
@@ -96,8 +97,9 @@ function Edit({
 
   // acf_meta_key
   // console.log({metaType}, {metaKey}, {metaValue});
-  console.log(date);
-  console.log('this is radio button =>', option);
+  // console.log(date);
+  // console.log('this is radio button =>', radioButton);
+
   const handleClick = () => {
     _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_7___default()({
       path: '/wp/v2/Posts/25'
@@ -121,17 +123,14 @@ function Edit({
       saved: select('core/editor').getCurrentPostAttribute('customFieldKey')
     };
   });
-  const {
-    savePost,
-    editedPost,
-    savedPost
-  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => {
-    return {
-      savePost: select('core/editor').isSavingPost(),
-      editedPost: select('core/editor').getEditedPostAttribute('generateTitleField'),
-      savedPost: select('core/editor').getCurrentPostAttribute('generateTitleField')
-    };
-  });
+
+  // const {savePost, editedPost, savedPost} = useSelect((select) => {
+  // 	return {
+  // 		savePost: select('core/editor').isSavingPost(),
+  // 		editedPost: select('core/editor').getEditedPostAttribute('generateTitleField'),
+  // 		savedPost: select('core/editor').getCurrentPostAttribute('generateTitleField')
+  // 	}
+  // });
   // const {saveRadio, editedRadio, savedRadio} = useSelect((select) => {
   // 	return {
   // 		saveRadio: select('core/editor').isSavingPost(),
@@ -148,7 +147,7 @@ function Edit({
     }, {
       saved
     });
-    if (isSaving && !(edited, saved)) {
+    if (isSaving) {
       _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_7___default()({
         path: `wp/acf-meta-block/v1/custom-field-key/save`,
         method: 'POST',
@@ -158,7 +157,7 @@ function Edit({
         }
       }).then(res => console.log('result =>', res));
     }
-    if (savePost && !(editedPost, savedPost)) {
+    if (isSaving) {
       _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_7___default()({
         path: `wp/acf-meta-block/v1/generate-title-field/save`,
         method: 'POST',
@@ -168,17 +167,17 @@ function Edit({
         }
       }).then(res => console.log('result =>', res));
     }
-    // if (saveRadio) {
-    // 	apiFetch({
-    // 		path: `wp/acf-meta-block/v1/radio-button/save`,
-    // 		method: 'POST',
-    // 			data: {
-    // 				post_id: wp.data.select('core/editor').getCurrentPostId(),
-    //   			radio_button: radioButton,
-    // 			}
-    // 	}).then(res => console.log('result =>', res));
-    // }
-  }, [isSaving, savePost]);
+    if (isSaving) {
+      _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_7___default()({
+        path: `wp/acf-meta-block/v1/radio-button/save`,
+        method: 'POST',
+        data: {
+          post_id: wp.data.select('core/editor').getCurrentPostId(),
+          radio_button: radioButton
+        }
+      }).then(res => console.log('result =>', res));
+    }
+  }, [isSaving]);
 
   // console.log('this is the custom field key edit.js', customFieldKey)
 
@@ -218,17 +217,26 @@ function Edit({
     selected: radioButton,
     options: [{
       label: 'True',
-      value: true
+      value: 1
     }, {
       label: 'False',
-      value: false
-    }],
-    onChange: value => setOption(value)
+      value: 0
+    }]
+    // onChange={(value) => setOption(value)}
+    ,
+    onChange: value => {
+      setAttributes({
+        radioButton: value
+      });
+    }
   })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Custom Blocks Date Picker', 'acf-meta')
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.DatePicker, {
-    currentDate: date,
-    onChange: newDate => setDate(newDate)
+    currentDate: date
+    // onChange={ (newDate) => setDate(newDate) }
+    // onChange={(value) => {
+    // 	setAttributes({ getDateBlock: new Date(value) })
+    // }}
   }))));
 }
 
@@ -245,8 +253,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./style.scss */ "./src/style.scss");
 /* harmony import */ var _edit__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./edit */ "./src/edit.js");
-/* harmony import */ var _save__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./save */ "./src/save.js");
-/* harmony import */ var _block_json__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./block.json */ "./src/block.json");
+/* harmony import */ var _block_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./block.json */ "./src/block.json");
 /**
  * Registers a new block provided a unique name and an object defining its behavior.
  *
@@ -269,92 +276,17 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
 /**
  * Every block starts by registering a new block type definition.
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
-(0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.registerBlockType)(_block_json__WEBPACK_IMPORTED_MODULE_4__.name, {
+(0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.registerBlockType)(_block_json__WEBPACK_IMPORTED_MODULE_3__.name, {
   /**
    * @see ./edit.js
    */
-  edit: _edit__WEBPACK_IMPORTED_MODULE_2__["default"],
-  save: _save__WEBPACK_IMPORTED_MODULE_3__["default"]
+  edit: _edit__WEBPACK_IMPORTED_MODULE_2__["default"]
 });
-
-/***/ }),
-
-/***/ "./src/save.js":
-/*!*********************!*\
-  !*** ./src/save.js ***!
-  \*********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ save)
-/* harmony export */ });
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/api-fetch */ "@wordpress/api-fetch");
-/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3__);
-
-/**
- * Retrieves the translation of text.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
- */
-
-
-/**
- * React hook that is used to mark the block wrapper element.
- * It provides all the necessary props like the class name.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
- */
-
-
-
-/**
- * The save function defines the way in which the different attributes should
- * be combined into the final markup, which is then serialized by the block
- * editor into `post_content`.
- *
- * @param  root0
- * @param  root0.attributes
- * @param  root0.attributes.message
- * @param  root0.attributes.content
- * @see https://developer.wordpress.org/block-editor/developers/block-api/block-edit-save/#save
- * @return {WPElement} Element to render.
- */
-function save({
-  attributes: {
-    customFieldKey,
-    metaKey
-  }
-}) {
-  // apiFetch({
-  // 	path: 'wp/acf-meta-block/v1/custom-field-key/save',
-  // 	method: 'POST',
-  // 	data: {
-  // 		post_id: wp.data.select('core/editor').getCurrentPostId(),
-  // 		acf_meta_value: metaKey,
-  // 	},
-  // })
-  // .then(res => console.log('result =>', res))
-  // .catch((error) => {
-
-  // });
-
-  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    ..._wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps.save()
-  });
-}
 
 /***/ }),
 
@@ -478,7 +410,7 @@ module.exports = window["wp"]["i18n"];
   \************************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"create-block/acf-meta","version":"0.1.0","title":"Acf Meta","category":"widgets","icon":"smiley","description":"Example block scaffolded with Create Block tool.","supports":{"html":false},"attributes":{"metaType":{"type":"string","default":"native"},"metaKey":{"type":"string"},"metaValue":{"type":"string"},"customFieldKey":{"type":"string"},"generateTitleField":{"type":"string"},"radioButton":{"type":"boolean","default":true}},"textdomain":"acf-meta","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","render":"file:./render.php"}');
+module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"create-block/acf-meta","version":"0.1.0","title":"Acf Meta","category":"widgets","icon":"smiley","description":"Example block scaffolded with Create Block tool.","supports":{"html":false},"attributes":{"metaType":{"type":"string","default":"native"},"metaKey":{"type":"string"},"metaValue":{"type":"string"},"customFieldKey":{"type":"string"},"generateTitleField":{"type":"string"},"radioButton":{"type":"boolean","default":true},"getDateBlock":{"type":"string"}},"textdomain":"acf-meta","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","render":"file:./render.php"}');
 
 /***/ })
 

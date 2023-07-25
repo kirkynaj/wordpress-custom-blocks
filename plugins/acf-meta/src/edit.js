@@ -42,7 +42,8 @@ export default function Edit({attributes, setAttributes, context: { postType, po
 		metaKey, 
 		metaValue, 
 		generateTitleField, 
-		radioButton } = attributes;
+		radioButton,
+		getDateBlock } = attributes;
 
 
 	//tutorial rest API
@@ -68,8 +69,8 @@ export default function Edit({attributes, setAttributes, context: { postType, po
 	
 	// acf_meta_key
 	// console.log({metaType}, {metaKey}, {metaValue});
-	console.log(date);
-	console.log('this is radio button =>', option);
+	// console.log(date);
+	// console.log('this is radio button =>', radioButton);
 	
 	const handleClick = () => {
 			apiFetch({path: '/wp/v2/Posts/25'}).then((posts) => {
@@ -90,13 +91,13 @@ export default function Edit({attributes, setAttributes, context: { postType, po
 		}
 	});
 
-	const {savePost, editedPost, savedPost} = useSelect((select) => {
-		return {
-			savePost: select('core/editor').isSavingPost(),
-			editedPost: select('core/editor').getEditedPostAttribute('generateTitleField'),
-			savedPost: select('core/editor').getCurrentPostAttribute('generateTitleField')
-		}
-	});
+	// const {savePost, editedPost, savedPost} = useSelect((select) => {
+	// 	return {
+	// 		savePost: select('core/editor').isSavingPost(),
+	// 		editedPost: select('core/editor').getEditedPostAttribute('generateTitleField'),
+	// 		savedPost: select('core/editor').getCurrentPostAttribute('generateTitleField')
+	// 	}
+	// });
 	// const {saveRadio, editedRadio, savedRadio} = useSelect((select) => {
 	// 	return {
 	// 		saveRadio: select('core/editor').isSavingPost(),
@@ -107,7 +108,7 @@ export default function Edit({attributes, setAttributes, context: { postType, po
 
 	useEffect(() => {
 		console.log({isSaving}, {edited}, {saved})
-		if (isSaving && !(edited, saved) ) {
+		if (isSaving) {
 				apiFetch({
 					path: `wp/acf-meta-block/v1/custom-field-key/save`,
     			method: 'POST',
@@ -116,7 +117,7 @@ export default function Edit({attributes, setAttributes, context: { postType, po
       			custom_field_key: customFieldKey,
     			},
 			}).then(res => console.log('result =>', res));		
-		} if (savePost && !(editedPost, savedPost)) {
+		} if (isSaving) {
 			apiFetch({
 				path: `wp/acf-meta-block/v1/generate-title-field/save`,
 				method: 'POST',
@@ -126,17 +127,17 @@ export default function Edit({attributes, setAttributes, context: { postType, po
 					}
 			}).then(res => console.log('result =>', res));
 		} 
-		// if (saveRadio) {
-		// 	apiFetch({
-		// 		path: `wp/acf-meta-block/v1/radio-button/save`,
-		// 		method: 'POST',
-    // 			data: {
-		// 				post_id: wp.data.select('core/editor').getCurrentPostId(),
-    //   			radio_button: radioButton,
-		// 			}
-		// 	}).then(res => console.log('result =>', res));
-		// }
-	},[isSaving, savePost]);
+		if (isSaving) {
+			apiFetch({
+				path: `wp/acf-meta-block/v1/radio-button/save`,
+				method: 'POST',
+    			data: {
+						post_id: wp.data.select('core/editor').getCurrentPostId(),
+      			radio_button: radioButton,
+					}
+			}).then(res => console.log('result =>', res));
+		}
+	},[isSaving]);
 
 	// console.log('this is the custom field key edit.js', customFieldKey)
 
@@ -195,10 +196,13 @@ export default function Edit({attributes, setAttributes, context: { postType, po
 							label="Custom Radio Button"
 							selected={ radioButton }
 								options={[
-									{label: 'True', value: true},
-									{label:'False', value: false},
+									{label: 'True', value: 1},
+									{label:'False', value: 0},
 								]}
-							onChange={(value) => setOption(value)}
+							// onChange={(value) => setOption(value)}
+							onChange={(value) => {
+								setAttributes({ radioButton: value })
+							}}
 						/>
 					</PanelBody>
 					<PanelBody
@@ -206,7 +210,10 @@ export default function Edit({attributes, setAttributes, context: { postType, po
 					>
 						<DatePicker
 							currentDate={ date }
-							onChange={ (newDate) => setDate(newDate) }
+							// onChange={ (newDate) => setDate(newDate) }
+							// onChange={(value) => {
+							// 	setAttributes({ getDateBlock: new Date(value) })
+							// }}
 						/>
 					</PanelBody>
 			</InspectorControls>
